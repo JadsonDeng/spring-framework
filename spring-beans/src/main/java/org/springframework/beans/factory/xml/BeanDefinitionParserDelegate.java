@@ -402,6 +402,7 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele) {
+		// 解析Bean标签，获取BeanDefinition对象
 		return parseBeanDefinitionElement(ele, null);
 	}
 
@@ -412,7 +413,9 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@Nullable
 	public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, @Nullable BeanDefinition containingBean) {
+		// 获取bean的id
 		String id = ele.getAttribute(ID_ATTRIBUTE);
+		// 获取bean的name
 		String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
 
 		List<String> aliases = new ArrayList<>();
@@ -431,9 +434,11 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		if (containingBean == null) {
+			// 校验bean的id和name是否唯一
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 
+		// 解析bean标签，获取BeanDefinition对象
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 		if (beanDefinition != null) {
 			if (!StringUtils.hasText(beanName)) {
@@ -503,27 +508,44 @@ public class BeanDefinitionParserDelegate {
 		this.parseState.push(new BeanEntry(beanName));
 
 		String className = null;
+		// 获取bean标签得到class属性
 		if (ele.hasAttribute(CLASS_ATTRIBUTE)) {
 			className = ele.getAttribute(CLASS_ATTRIBUTE).trim();
 		}
 		String parent = null;
+		// 获取bean标签的parent属性
 		if (ele.hasAttribute(PARENT_ATTRIBUTE)) {
 			parent = ele.getAttribute(PARENT_ATTRIBUTE);
 		}
 
 		try {
+			// 创建BeanDefinition对象GenericBeanDefinition
 			AbstractBeanDefinition bd = createBeanDefinition(className, parent);
 
+			// 解析bean标签的属性
 			parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
+			/**
+			 * 解析bean标签的自标签-begin
+			 */
+			// 解析description标签
 			bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
 
+			// 解析meta标签
 			parseMetaElements(ele, bd);
+			// 解析lookup-method标签
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
+			// 解析replaced-method标签
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
-
+			// 解析Constructor-arg标签
 			parseConstructorArgElements(ele, bd);
+			// 解析property标签
 			parsePropertyElements(ele, bd);
+			// 解析qualifier标签
 			parseQualifierElements(ele, bd);
+
+			/**
+			 * 解析bean子标签结束-end
+			 */
 
 			bd.setResource(this.readerContext.getResource());
 			bd.setSource(extractSource(ele));

@@ -515,40 +515,58 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
+			// 1. 刷新预处理
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			/**
+			 * step 2.
+			 * 创建IOC容器（DefaultL istableBeanFactory）
+			 * 加载解析xml文件（最终存储到Document对象中）
+			 * 读取Document对象，转换为BeanDefinition，注册BeanDefinition
+			 */
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// step 3:对IOC容器(BeanFactory)进行一些预处理，设置一些公共参数
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				// step 4: 预留的接口
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
+				// step 5: 调用BeanFactoryPostProcessor后置处理器对BeanDefinition进行处理
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				// step 6: 注册BeanPostProcessor后置处理器
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
+				// step 7: 初始化一下消息源，比如处理国际化的i18n等消息源
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				// step 8: 初始化应用事件广播
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
+				// step 9: 初始化一些特殊的bean
 				onRefresh();
 
 				// Check for listener beans and register them.
+				// step 10: 注册一些事件监听器
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				// step 11: 实力话一些剩余的单例bean（非懒加载的bean）
+				// 注意：Bean的IOD、DI和AOP都是发生在此步骤
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
+				// step 12: 完成刷新时，需要发布对应的事件
 				finishRefresh();
 			}
 
@@ -632,7 +650,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
-	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+	protected ConfigurableListableBeanFactory  obtainFreshBeanFactory() {
+		// 主要通过该方法完成ioc容器的刷新
 		refreshBeanFactory();
 		return getBeanFactory();
 	}
