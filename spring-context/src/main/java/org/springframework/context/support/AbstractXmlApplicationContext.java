@@ -126,7 +126,7 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 		// 比如ClassPathXmlApplicationContext中进行了实现，而FileSystemXmlApplicationContext中没有使用该方法
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
-			// xml bean读取器调用其弗雷AbstractBeanDefinition读取定位的资源
+			// xml bean读取器调用其父类AbstractBeanDefinition读取定位的资源
 			reader.loadBeanDefinitions(configResources);
 		}
 		// 如果子类中获取的资源定位为空，则获取FileSystemXmlApplicationContext构造方法中setConfigLocations方法设置的资源
