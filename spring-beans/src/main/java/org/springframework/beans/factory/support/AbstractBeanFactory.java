@@ -323,6 +323,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				// Create bean instance.
 				// 如果是单例bean，执行下面代码
 				if (mbd.isSingleton()) {
+					// getSingleton会将beanName放入到singletonsCurrentlyInCreation中
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
 							// 创建单例bean的主要方法
